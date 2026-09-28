@@ -10,7 +10,7 @@
         :style="{width: setSize.imgWidth,
                  height: setSize.imgHeight,}"
       >
-        <img :src="backImgBase?('data:image/png;base64,'+backImgBase):defaultImg" alt="" style="width:100%;height:100%;display:block">
+        <img :src="backImgBase?('data:image/jpeg;base64,'+backImgBase):defaultImg" alt="" style="width:100%;height:100%;display:block">
         <div v-show="showRefresh" class="verify-refresh" @click="refresh"><i class="iconfont icon-refresh" />
         </div>
         <transition name="tips">
@@ -44,13 +44,13 @@
           <div
             v-if="type === '2'"
             class="verify-sub-block"
-            :style="{'width':Math.floor(parseInt(setSize.imgWidth)*47/310)+ 'px',
+            :style="{'width':Math.floor(parseInt(setSize.imgWidth)*94/620)+ 'px',
                      'height': setSize.imgHeight,
                      'top':'-' + (parseInt(setSize.imgHeight) + vSpace) + 'px',
                      'background-size': setSize.imgWidth + ' ' + setSize.imgHeight,
             }"
           >
-            <img :src="'data:image/png;base64,'+blockBackImgBase" alt="" style="width:100%;height:100%;display:block">
+            <img :src="'data:image/png;base64,'+blockBackImgBase" alt="" style="width:100%;height:100%;display:block;object-fit:contain">
           </div>
         </div>
       </div>
@@ -275,7 +275,7 @@ export default {
       // 判断是否重合
       if (this.status && this.isEnd == false) {
         var moveLeftDistance = parseInt((this.moveBlockLeft || '').replace('px', ''))
-        moveLeftDistance = moveLeftDistance * 310 / parseInt(this.setSize.imgWidth)
+        moveLeftDistance = moveLeftDistance * 620 / parseInt(this.setSize.imgWidth)
         const data = {
           captchaType: this.captchaType,
           'pointJson': this.secretKey ? aesEncrypt(JSON.stringify({ x: moveLeftDistance, y: 5.0 }), this.secretKey) : JSON.stringify({ x: moveLeftDistance, y: 5.0 }),

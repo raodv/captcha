@@ -36,6 +36,7 @@ public abstract class AbstractCaptchaService implements CaptchaService {
     protected Logger logger = LoggerFactory.getLogger(getClass());
 
     protected static final String IMAGE_TYPE_PNG = "png";
+    protected static final String IMAGE_TYPE_JPG = "jpg";
 
 	protected static int HAN_ZI_SIZE = 25;
 
@@ -56,7 +57,7 @@ public abstract class AbstractCaptchaService implements CaptchaService {
 
     protected Font waterMarkFont;//水印字体
 
-    protected static String slipOffset = "5";
+    protected static String slipOffset = "10";
 
     protected static Boolean captchaAesStatus = true;
 

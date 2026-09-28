@@ -191,20 +191,30 @@ public class ImageUtils {
 
 
     private static Map<String, String> getResourcesImagesFile(String path) {
-        //默认提供六张底图
+        //默认提供六张底图，支持 png 和 jpg 两种格式
         Map<String, String> imgMap = new HashMap<>();
         ClassLoader classLoader = ImageUtils.class.getClassLoader();
         for (int i = 1; i <= 6; i++) {
-            InputStream resourceAsStream = classLoader.getResourceAsStream(path.concat("/").concat(String.valueOf(i).concat(".png")));
-            byte[] bytes = new byte[0];
-            try {
-                bytes = FileCopyUtils.copyToByteArray(resourceAsStream);
-            } catch (IOException e) {
-                e.printStackTrace();
+            // 优先加载 jpg，其次加载 png
+            String[] exts = {".jpg", ".png"};
+            boolean loaded = false;
+            for (String ext : exts) {
+                String filename = String.valueOf(i).concat(ext);
+                InputStream resourceAsStream = classLoader.getResourceAsStream(path.concat("/").concat(filename));
+                if (resourceAsStream == null) {
+                    continue;
+                }
+                byte[] bytes = new byte[0];
+                try {
+                    bytes = FileCopyUtils.copyToByteArray(resourceAsStream);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                String string = Base64Utils.encodeToString(bytes);
+                imgMap.put(filename, string);
+                loaded = true;
+                break;
             }
-            String string = Base64Utils.encodeToString(bytes);
-            String filename = String.valueOf(i).concat(".png");
-            imgMap.put(filename, string);
         }
         return imgMap;
     }

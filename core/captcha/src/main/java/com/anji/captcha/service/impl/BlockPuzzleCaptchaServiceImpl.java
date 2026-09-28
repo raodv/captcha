@@ -180,12 +180,12 @@ public class BlockPuzzleCaptchaServiceImpl extends AbstractCaptchaService {
             cutByTemplate(originalImage, jigsawImage, newJigsawImage, x, 0);
             if (captchaInterferenceOptions > 0) {
                 int position = 0;
-                if (originalWidth - x - 5 > jigsawWidth * 2) {
+                if (originalWidth - x - 10 > jigsawWidth * 2) {
                     //在原扣图右边插入干扰图
                     position = RandomUtils.getRandomInt(x + jigsawWidth + 5, originalWidth - jigsawWidth);
                 } else {
                     //在原扣图左边插入干扰图
-                    position = RandomUtils.getRandomInt(100, x - jigsawWidth - 5);
+                    position = RandomUtils.getRandomInt(200, x - jigsawWidth - 10);
                 }
                 while (true) {
                     String s = ImageUtils.getslidingBlock();
@@ -199,7 +199,7 @@ public class BlockPuzzleCaptchaServiceImpl extends AbstractCaptchaService {
                 while (true) {
                     String s = ImageUtils.getslidingBlock();
                     if (!jigsawImageBase64.equals(s)) {
-                        Integer randomInt = RandomUtils.getRandomInt(jigsawWidth, 100 - jigsawWidth);
+                        Integer randomInt = RandomUtils.getRandomInt(jigsawWidth, 200 - jigsawWidth);
                         interferenceByTemplate(originalImage, Objects.requireNonNull(ImageUtils.getBase64StrToImage(s)),
                                 randomInt, 0);
                         break;
@@ -219,7 +219,7 @@ public class BlockPuzzleCaptchaServiceImpl extends AbstractCaptchaService {
             byte[] jigsawImages = os.toByteArray();
 
             ByteArrayOutputStream oriImagesOs = new ByteArrayOutputStream();//新建流。
-            ImageIO.write(originalImage, IMAGE_TYPE_PNG, oriImagesOs);//利用ImageIO类提供的write方法，将bi以jpg图片的数据模式写入流。
+            ImageIO.write(originalImage, IMAGE_TYPE_JPG, oriImagesOs);//底图输出为JPG格式（体积更小）
             byte[] oriCopyImages = oriImagesOs.toByteArray();
             Base64.Encoder encoder = Base64.getEncoder();
             dataVO.setOriginalImageBase64(encoder.encodeToString(oriCopyImages).replaceAll("\r|\n", ""));
@@ -260,7 +260,7 @@ public class BlockPuzzleCaptchaServiceImpl extends AbstractCaptchaService {
         if (widthDifference <= 0) {
             x = 5;
         } else {
-            x = random.nextInt(originalWidth - jigsawWidth - 100) + 100;
+            x = random.nextInt(originalWidth - jigsawWidth - 200) + 200;
         }
         if (heightDifference <= 0) {
             y = 5;
@@ -289,35 +289,27 @@ public class BlockPuzzleCaptchaServiceImpl extends AbstractCaptchaService {
 
         int xLength = templateImage.getWidth();
         int yLength = templateImage.getHeight();
-        // 模板图像宽度
         for (int i = 0; i < xLength; i++) {
-            // 模板图片高度
             for (int j = 0; j < yLength; j++) {
-                // 如果模板图像当前像素点不是透明色 copy源文件信息到目标图片中
-                int rgb = templateImage.getRGB(i, j);
-                if (rgb < 0) {
-                    newImage.setRGB(i, j, oriImage.getRGB(x + i, y + j));
-
-                    //抠图区域高斯模糊
-                    readPixel(oriImage, x + i, y + j, values);
-                    fillMatrix(martrix, values);
-                    oriImage.setRGB(x + i, y + j, avgMatrix(martrix));
-                }
-
-                //防止数组越界判断
-                if (i == (xLength - 1) || j == (yLength - 1)) {
-                    continue;
-                }
-                int rightRgb = templateImage.getRGB(i + 1, j);
-                int downRgb = templateImage.getRGB(i, j + 1);
-                //描边处理，,取带像素和无像素的界点，判断该点是不是临界轮廓点,如果是设置该坐标像素是白色
-                if ((rgb >= 0 && rightRgb < 0) || (rgb < 0 && rightRgb >= 0) || (rgb >= 0 && downRgb < 0) || (rgb < 0 && downRgb >= 0)) {
-                    newImage.setRGB(i, j, Color.white.getRGB());
-                    oriImage.setRGB(x + i, y + j, Color.white.getRGB());
+                int templateRgb = templateImage.getRGB(i, j);
+                int alpha = (templateRgb >> 24) & 0xff;
+                if (alpha > 0) {
+                    if (alpha > 200) {
+                        // 完全内部像素：滑块抠背景色，底图凹槽高斯模糊
+                        int oriRgb = oriImage.getRGB(x + i, y + j);
+                        newImage.setRGB(i, j, (alpha << 24) | (oriRgb & 0x00FFFFFF));
+                        readPixel(oriImage, x + i, y + j, values);
+                        fillMatrix(martrix, values);
+                        int blurredRgb = avgMatrix(martrix);
+                        oriImage.setRGB(x + i, y + j, blurredRgb);
+                    } else {
+                        // 边缘过渡像素：滑块与凹槽同一套白描边逻辑——按 alpha 渐变混合白色，粗细浓度完全对称
+                        oriImage.setRGB(x + i, y + j, blendWithWhite(oriImage.getRGB(x + i, y + j), alpha));
+                        newImage.setRGB(i, j, (alpha << 24) | 0x00FFFFFF);
+                    }
                 }
             }
         }
-
     }
 
 
@@ -331,37 +323,45 @@ public class BlockPuzzleCaptchaServiceImpl extends AbstractCaptchaService {
      * @throws Exception
      */
     private static void interferenceByTemplate(BufferedImage oriImage, BufferedImage templateImage, int x, int y) {
-        //临时数组遍历用于高斯模糊存周边像素值
         int[][] martrix = new int[3][3];
         int[] values = new int[9];
 
         int xLength = templateImage.getWidth();
         int yLength = templateImage.getHeight();
-        // 模板图像宽度
         for (int i = 0; i < xLength; i++) {
-            // 模板图片高度
             for (int j = 0; j < yLength; j++) {
-                // 如果模板图像当前像素点不是透明色 copy源文件信息到目标图片中
                 int rgb = templateImage.getRGB(i, j);
-                if (rgb < 0) {
-                    //抠图区域高斯模糊
-                    readPixel(oriImage, x + i, y + j, values);
-                    fillMatrix(martrix, values);
-                    oriImage.setRGB(x + i, y + j, avgMatrix(martrix));
-                }
-                //防止数组越界判断
-                if (i == (xLength - 1) || j == (yLength - 1)) {
-                    continue;
-                }
-                int rightRgb = templateImage.getRGB(i + 1, j);
-                int downRgb = templateImage.getRGB(i, j + 1);
-                //描边处理，,取带像素和无像素的界点，判断该点是不是临界轮廓点,如果是设置该坐标像素是白色
-                if ((rgb >= 0 && rightRgb < 0) || (rgb < 0 && rightRgb >= 0) || (rgb >= 0 && downRgb < 0) || (rgb < 0 && downRgb >= 0)) {
-                    oriImage.setRGB(x + i, y + j, Color.white.getRGB());
+                int alpha = (rgb >> 24) & 0xff;
+                if (alpha > 0) {
+                    if (alpha > 200) {
+                        // 完全内部像素：高斯模糊凹槽效果
+                        readPixel(oriImage, x + i, y + j, values);
+                        fillMatrix(martrix, values);
+                        int blurredRgb = avgMatrix(martrix);
+                        oriImage.setRGB(x + i, y + j, blurredRgb);
+                    } else {
+                        // 边缘过渡像素：与主拼图凹槽统一的白描边逻辑（alpha 渐变混合白）
+                        oriImage.setRGB(x + i, y + j, blendWithWhite(oriImage.getRGB(x + i, y + j), alpha));
+                    }
                 }
             }
         }
+        // 干扰图不画描边
+    }
 
+    /**
+     * 按模板 alpha 比例将原像素与白色混合，得到柔和淡雅的白描边
+     * （alpha 越大白色越浓，随模板边缘自然渐变，滑块与凹槽共用同一逻辑保证视觉统一）
+     */
+    private static int blendWithWhite(int rgb, int alpha) {
+        float ratio = alpha / 255f;
+        int r = (rgb >> 16) & 0xff;
+        int g = (rgb >> 8) & 0xff;
+        int b = rgb & 0xff;
+        int nr = (int) (r * (1 - ratio) + 255 * ratio);
+        int ng = (int) (g * (1 - ratio) + 255 * ratio);
+        int nb = (int) (b * (1 - ratio) + 255 * ratio);
+        return 0xFF000000 | (nr << 16) | (ng << 8) | nb;
     }
 
     private static void readPixel(BufferedImage img, int x, int y, int[] pixels) {

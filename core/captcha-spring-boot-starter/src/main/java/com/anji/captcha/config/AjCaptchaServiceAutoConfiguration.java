@@ -76,7 +76,9 @@ public class AjCaptchaServiceAutoConfiguration {
         Map<String, String> originalMap, slidingBlockMap, picClickMap, curveSliderMap;
 
         if (StringUtils.isNotBlank(jigsaw)) {
-            originalMap = getResourcesImagesFile(jigsaw + "/original/*.png");
+            // Spring 5 的 PathMatchingResourcePatternResolver 不支持 {} 通配符，分别加载 jpg 和 png 后合并
+            originalMap = getResourcesImagesFile(jigsaw + "/original/*.jpg");
+            originalMap.putAll(getResourcesImagesFile(jigsaw + "/original/*.png"));
             slidingBlockMap = getResourcesImagesFile(jigsaw + "/slidingBlock/*.png");
         } else {
             originalMap = getDefaultResourcesImagesFile("defaultImages/jigsaw/original");
@@ -101,16 +103,20 @@ public class AjCaptchaServiceAutoConfiguration {
     private static Map<String, String> getDefaultResourcesImagesFile(String path) {
         Map<String, String> imgMap = new HashMap<>();
         ClassLoader classLoader = AjCaptchaServiceAutoConfiguration.class.getClassLoader();
+        String[] exts = {".jpg", ".png"};
         for (int i = 1; i <= 6; i++) {
-            String filePath = path + "/" + i + ".png";
-            org.springframework.core.io.ClassPathResource resource =
-                    new org.springframework.core.io.ClassPathResource(filePath);
-            try {
-                byte[] bytes = FileCopyUtils.copyToByteArray(resource.getInputStream());
-                String base64 = Base64Utils.encodeToString(bytes);
-                imgMap.put(i + ".png", base64);
-            } catch (Exception e) {
-                // 默认图片不存在时跳过
+            for (String ext : exts) {
+                String filePath = path + "/" + i + ext;
+                org.springframework.core.io.ClassPathResource resource =
+                        new org.springframework.core.io.ClassPathResource(filePath);
+                try {
+                    byte[] bytes = FileCopyUtils.copyToByteArray(resource.getInputStream());
+                    String base64 = Base64Utils.encodeToString(bytes);
+                    imgMap.put(i + ext, base64);
+                    break; // 加载成功则不再尝试其他扩展名
+                } catch (Exception e) {
+                    // 当前扩展名不存在，尝试下一个
+                }
             }
         }
         return imgMap;

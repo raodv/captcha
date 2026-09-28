@@ -255,7 +255,7 @@
         	
         	this.$element.css('position', 'relative');
 
-			this.htmlDoms.sub_block.css({'height':this.setSize.img_height,'width':Math.floor(parseInt(this.setSize.img_width)*47/310)+ 'px',
+			this.htmlDoms.sub_block.css({'height':this.setSize.img_height,'width':Math.floor(parseInt(this.setSize.img_width)*94/620)+ 'px',
 									'top':-(parseInt(this.setSize.img_height) + this.options.vSpace) + 'px'})
 			this.htmlDoms.out_panel.css('height', parseInt(this.setSize.img_height) + this.options.vSpace + 'px');
 			this.htmlDoms.img_panel.css({'width': this.setSize.img_width, 'height': this.setSize.img_height});
@@ -320,7 +320,7 @@
         	//判断是否重合
         	if(this.status  && this.isEnd == false) {
 				var vOffset = parseInt(this.options.vOffset);
-				this.moveLeftDistance = this.moveLeftDistance * 310/ parseInt(this.setSize.img_width)
+				this.moveLeftDistance = this.moveLeftDistance * 620/ parseInt(this.setSize.img_width)
 				//图片滑动
 
 				var data = {
@@ -451,7 +451,7 @@
 			this.isEnd = false;
 			getPictrue({captchaType:"blockPuzzle", clientUid: localStorage.getItem('slider'), ts: Date.now()},this.options.baseUrl,function (res) {
 				if (res.repCode=="0000") {
-					_this.$element.find(".backImg")[0].src = 'data:image/png;base64,'+res.repData.originalImageBase64
+					_this.$element.find(".backImg")[0].src = 'data:image/jpeg;base64,'+res.repData.originalImageBase64
 					_this.$element.find(".bock-backImg")[0].src = 'data:image/png;base64,'+res.repData.jigsawImageBase64
 					_this.secretKey = res.repData.secretKey
 					_this.backToken = res.repData.token

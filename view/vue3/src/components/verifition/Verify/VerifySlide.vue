@@ -5,7 +5,7 @@
             >
             <div class="verify-img-panel" :style="{width: setSize.imgWidth,
                                                    height: setSize.imgHeight,}">
-                <img :src="'data:image/png;base64,'+backImgBase" alt="" style="width:100%;height:100%;display:block">
+                <img :src="'data:image/jpeg;base64,'+backImgBase" alt="" style="width:100%;height:100%;display:block">
                 <div class="verify-refresh" @click="refresh" v-show="showRefresh"><i class="iconfont icon-refresh"></i>
                 </div>
                 <transition name="tips">
@@ -28,12 +28,12 @@
                     <i :class="['verify-icon iconfont', iconClass]"
                        :style="{color: iconColor}"></i>
                     <div v-if="type === '2'" class="verify-sub-block"
-                        :style="{'width':Math.floor(parseInt(setSize.imgWidth)*47/310)+ 'px',
+                        :style="{'width':Math.floor(parseInt(setSize.imgWidth)*94/620)+ 'px',
                                   'height': setSize.imgHeight,
                                   'top':'-' + (parseInt(setSize.imgHeight) + vSpace) + 'px',
                                   'background-size': setSize.imgWidth + ' ' + setSize.imgHeight,
                                   }">
-                        <img :src="'data:image/png;base64,'+blockBackImgBase" alt=""  style="width:100%;height:100%;display:block;-webkit-user-drag:none;">
+                        <img :src="'data:image/png;base64,'+blockBackImgBase" alt=""  style="width:100%;height:100%;display:block;-webkit-user-drag:none;object-fit:contain;">
                     </div>
                 </div>
             </div>
@@ -241,7 +241,7 @@
                     //判断是否重合
                     if (status.value && isEnd.value == false) {
                         var moveLeftDistance = parseInt((moveBlockLeft.value || '').replace('px', ''));
-                        moveLeftDistance = moveLeftDistance * 310/ parseInt(setSize.imgWidth)
+                        moveLeftDistance = moveLeftDistance * 620/ parseInt(setSize.imgWidth)
                         let data = {
                             captchaType:captchaType.value,
                             "pointJson":secretKey.value ? aesEncrypt(JSON.stringify({x:moveLeftDistance,y:5.0}),secretKey.value):JSON.stringify({x:moveLeftDistance,y:5.0}),

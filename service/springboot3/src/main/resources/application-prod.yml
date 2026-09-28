@@ -16,7 +16,7 @@ aj:
     water-mark: 我的水印
     water-font: 宋体
     font-type: 宋体
-    slip-offset: 5
+    slip-offset: 10
     curve-offset: 8
     aes-status: true
     interference-options: 1

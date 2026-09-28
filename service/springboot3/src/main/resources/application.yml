@@ -43,7 +43,7 @@ aj:
     # 点选文字验证码的文字字体
     # font-type: WenQuanZhengHei.ttf
     # 校验滑动拼图允许误差偏移量(默认5像素)
-    slip-offset: 5
+    slip-offset: 10
     # 校验滑块曲线允许误差偏移量(默认8像素)
     curve-offset: 8
     # aes加密坐标开启或禁用

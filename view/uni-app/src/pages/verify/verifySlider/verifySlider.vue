@@ -6,7 +6,7 @@
             <view class="verify-img-panel" :style="{width: imgSize.width,
                                                    height: imgSize.height,}">
 
-               <image :src="backImgBase?('data:image/png;base64,'+backImgBase):defaultImg" alt="" style="width:100%;height:100%;display:block"></image>
+               <image :src="backImgBase?('data:image/jpeg;base64,'+backImgBase):defaultImg" alt="" style="width:100%;height:100%;display:block"></image>
                 <view class="verify-refresh" @click="refresh" v-show="showRefresh">
                     <text class="iconfont icon-refresh"></text>
                 </view>
@@ -33,7 +33,7 @@
                        :style="{color: iconColor}"></text>
                     <view v-if="type === '2'"
                          class="verify-sub-block"
-                         :style="{'width':Math.floor(parseInt(imgSize.width)*47/310)+ 'px' ,
+                         :style="{'width':Math.floor(parseInt(imgSize.width)*94/620)+ 'px' ,
                                   'height': imgSize.height,
                                   'top':'-' + (parseInt(imgSize.height) + vSpace) + 'px',
                                   }"
@@ -208,7 +208,7 @@
                     if (this.type !== '1') {		//图片滑动
                         var moveLeftDistance = parseInt((this.moveBlockLeft || '').replace('px', ''));
 
-                        moveLeftDistance = moveLeftDistance * 310/ parseInt(this.imgSize.width)
+                        moveLeftDistance = moveLeftDistance * 620/ parseInt(this.imgSize.width)
 
                         var captchaVerification = this.secretKey ?aesEncrypt(this.backToken+'---'+JSON.stringify({x:moveLeftDistance,y:5.0}),this.secretKey):this.backToken+'---'+JSON.stringify({x:moveLeftDistance,y:5.0})
                         let data = {
