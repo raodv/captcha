@@ -28,6 +28,13 @@
             <scope>provided</scope>
         </dependency>
 
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.13.2</version>
+            <scope>test</scope>
+        </dependency>
+
     </dependencies>
 
     <!--中央仓库上传配置开始-->

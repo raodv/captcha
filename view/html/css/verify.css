@@ -250,3 +250,13 @@ html{
 .icon-right:before { content: "\e6a3"; }
 
 .icon-refresh:before { content: "\e6a4"; }
+
+/* 滑块曲线验证码 */
+.verify-bar-area .verify-move-block.curve-slide-block {
+    border-radius: 50%;
+}
+
+.verify-bar-area .verify-move-block .verify-sub-block.curve-sub-block {
+    border-radius: 50%;
+    overflow: hidden;
+}

@@ -1,3 +1,14 @@
+---
+AIGC:
+  ContentProducer: '001191110102MAD55U9H0F10002'
+  ContentPropagator: '001191110102MAD55U9H0F10002'
+  Label: '1'
+  ProduceID: '4a7b65de-912b-4e5a-8920-29ab51ac0ac0'
+  PropagateID: '4a7b65de-912b-4e5a-8920-29ab51ac0ac0'
+  ReservedCode1: '2603406b-4093-46e9-adfa-47d0bae7a153'
+  ReservedCode2: '2603406b-4093-46e9-adfa-47d0bae7a153'
+---
+
 # **在线体验暂时下线 ！！！**
 #### &emsp; 在线文档:[https://ajcaptcha.beliefteam.cn/captcha-doc/](https://ajcaptcha.beliefteam.cn/captcha-doc/ "doc")<br>
 
@@ -6,7 +17,7 @@
 [![EN doc](https://img.shields.io/badge/document-English-blue.svg)](README.md)[![CN doc](https://img.shields.io/badge/文档-中文版-blue.svg)](README_CN.md)
 
 ## 简介
-&emsp; &emsp; AJ-Captcha行为验证码，包含滑动拼图、文字点选两种方式，UI支持弹出和嵌入两种方式。后端提供Java、Golang实现，前端提供了php、angular、html、vue、uni-app、flutter、android、ios等代码示例。
+&emsp; &emsp; AJ-Captcha行为验证码，包含滑动拼图、滑块曲线、文字点选三种方式，UI支持弹出和嵌入两种方式。后端提供Java、Golang实现，前端提供了php、angular、html、vue、uni-app、flutter、android、ios等代码示例。
 
 # 1 在线体验
 **在线体验暂时下线**
@@ -27,7 +38,7 @@
 #### &emsp; 2.2 概念术语描述
 | 术语  | 描述  |
 | ------------ | ------------ |
-| 验证码类型 | 1）滑动拼图 blockPuzzle  2）文字点选 clickWord|
+| 验证码类型 | 1）滑动拼图 blockPuzzle  2）滑块曲线 curveSlider  3）文字点选 clickWord|
 | 验证  |  用户拖动/点击一次验证码拼图即视为一次“验证”，不论拼图/点击是否正确 |
 | 二次校验  | 验证数据随表单提交到后台后，后台需要调用captchaService.verification做二次校验。目的是核实验证数据的有效性。  |
 
@@ -95,3 +106,5 @@ I  Your application is running here: http://localhost:8081
 
 # Stargazers over time
 [![Stargazers over time](https://starchart.cc/anji-plus/captcha.svg)](https://starchart.cc/anji-plus/captcha)
+
+> AI生成

@@ -21,6 +21,8 @@ export default new Router({
         { path: 'sliderFixed', name: 'sliderFixed', component: () => import('./../views/useOnline/SliderFixed.vue') },
         { path: 'pointPop', name: 'pointPop', component: () => import('./../views/useOnline/PointPop.vue') },
         { path: 'pointFixed', name: 'pointFixed', component: () => import('./../views/useOnline/PointFixed.vue') },
+        { path: 'curvePop', name: 'curvePop', component: () => import('./../views/useOnline/CurvePop.vue') },
+        { path: 'curveFixed', name: 'curveFixed', component: () => import('./../views/useOnline/CurveFixed.vue') },
       ]
     },
     {

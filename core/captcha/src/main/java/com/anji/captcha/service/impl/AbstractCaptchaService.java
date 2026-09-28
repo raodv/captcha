@@ -75,7 +75,8 @@ public abstract class AbstractCaptchaService implements CaptchaService {
         boolean aBoolean = Boolean.parseBoolean(config.getProperty(Const.CAPTCHA_INIT_ORIGINAL));
         if (!aBoolean) {
             ImageUtils.cacheImage(config.getProperty(Const.ORIGINAL_PATH_JIGSAW),
-                    config.getProperty(Const.ORIGINAL_PATH_PIC_CLICK), config.getProperty(Const.ORIGINAL_PATH_ROTATE));
+                    config.getProperty(Const.ORIGINAL_PATH_PIC_CLICK), config.getProperty(Const.ORIGINAL_PATH_ROTATE),
+                    config.getProperty(Const.ORIGINAL_PATH_CURVE_SLIDER));
         }
         logger.info("--->>>初始化验证码底图<<<---" + captchaType());
         waterMark = config.getProperty(Const.CAPTCHA_WATER_MARK, "我的水印");

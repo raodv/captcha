@@ -39,7 +39,9 @@ public class AjCaptchaServiceAutoConfiguration {
         config.put(Const.CAPTCHA_INTERFERENCE_OPTIONS, prop.getInterferenceOptions());
         config.put(Const.ORIGINAL_PATH_JIGSAW, prop.getJigsaw());
         config.put(Const.ORIGINAL_PATH_PIC_CLICK, prop.getPicClick());
+        config.put(Const.ORIGINAL_PATH_CURVE_SLIDER, prop.getCurveSlider());
         config.put(Const.CAPTCHA_SLIP_OFFSET, prop.getSlipOffset());
+        config.put(Const.CAPTCHA_CURVE_OFFSET, prop.getCurveOffset());
         config.put(Const.CAPTCHA_AES_STATUS, String.valueOf(prop.getAesStatus()));
         config.put(Const.CAPTCHA_WATER_FONT, prop.getWaterFont());
         config.put(Const.CAPTCHA_CACAHE_MAX_NUMBER, prop.getCacheNumber());
@@ -59,19 +61,59 @@ public class AjCaptchaServiceAutoConfiguration {
         config.put(Const.CAPTCHA_WORD_COUNT, prop.getClickWordCount() + "");
 
         if ((StringUtils.isNotBlank(prop.getJigsaw()) && prop.getJigsaw().startsWith("classpath"))
-                || (StringUtils.isNotBlank(prop.getPicClick()) && prop.getPicClick().startsWith("classpath"))) {
+                || (StringUtils.isNotBlank(prop.getPicClick()) && prop.getPicClick().startsWith("classpath"))
+                || (StringUtils.isNotBlank(prop.getCurveSlider()) && prop.getCurveSlider().startsWith("classpath"))) {
             //自定义resources目录下初始化底图
             config.put(Const.CAPTCHA_INIT_ORIGINAL, "true");
-            initializeBaseMap(prop.getJigsaw(), prop.getPicClick());
+            initializeBaseMap(prop.getJigsaw(), prop.getPicClick(), prop.getCurveSlider());
         }
         CaptchaService s = CaptchaServiceFactory.getInstance(config);
         return s;
     }
 
-    private static void initializeBaseMap(String jigsaw, String picClick) {
-        ImageUtils.cacheBootImage(getResourcesImagesFile(jigsaw + "/original/*.png"),
-                getResourcesImagesFile(jigsaw + "/slidingBlock/*.png"),
-                getResourcesImagesFile(picClick + "/*.png"));
+    private static void initializeBaseMap(String jigsaw, String picClick, String curveSlider) {
+        // 未配置 classpath 路径的类型，回退到 core 默认底图目录
+        Map<String, String> originalMap, slidingBlockMap, picClickMap, curveSliderMap;
+
+        if (StringUtils.isNotBlank(jigsaw)) {
+            originalMap = getResourcesImagesFile(jigsaw + "/original/*.png");
+            slidingBlockMap = getResourcesImagesFile(jigsaw + "/slidingBlock/*.png");
+        } else {
+            originalMap = getDefaultResourcesImagesFile("defaultImages/jigsaw/original");
+            slidingBlockMap = getDefaultResourcesImagesFile("defaultImages/jigsaw/slidingBlock");
+        }
+
+        if (StringUtils.isNotBlank(picClick)) {
+            picClickMap = getResourcesImagesFile(picClick + "/*.png");
+        } else {
+            picClickMap = getDefaultResourcesImagesFile("defaultImages/pic-click");
+        }
+
+        if (StringUtils.isNotBlank(curveSlider)) {
+            curveSliderMap = getResourcesImagesFile(curveSlider + "/original/*.png");
+        } else {
+            curveSliderMap = getDefaultResourcesImagesFile("defaultImages/curveSlider/original");
+        }
+
+        ImageUtils.cacheBootImage(originalMap, slidingBlockMap, picClickMap, curveSliderMap);
+    }
+
+    private static Map<String, String> getDefaultResourcesImagesFile(String path) {
+        Map<String, String> imgMap = new HashMap<>();
+        ClassLoader classLoader = AjCaptchaServiceAutoConfiguration.class.getClassLoader();
+        for (int i = 1; i <= 6; i++) {
+            String filePath = path + "/" + i + ".png";
+            org.springframework.core.io.ClassPathResource resource =
+                    new org.springframework.core.io.ClassPathResource(filePath);
+            try {
+                byte[] bytes = FileCopyUtils.copyToByteArray(resource.getInputStream());
+                String base64 = Base64Utils.encodeToString(bytes);
+                imgMap.put(i + ".png", base64);
+            } catch (Exception e) {
+                // 默认图片不存在时跳过
+            }
+        }
+        return imgMap;
     }
 
     public static Map<String, String> getResourcesImagesFile(String path) {

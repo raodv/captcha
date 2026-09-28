@@ -711,5 +711,393 @@
 			points.init();
 		}
     };
+
+
+    // ==================== 滑块曲线 (curveSlider) V3 ====================
+    // 端点固定，拖动改变弧度。后端返回底图(含目标曲线)+曲线参数JSON，
+    // 前端Canvas绘制底图+活动曲线，拖动滑块改变活动曲线控制点x，
+    // check时传活动曲线控制点x坐标。
+
+    //定义CurveSlide的构造函数
+    var CurveSlide = function(ele, opt) {
+		this.$element = ele,
+		this.backToken = null,
+        this.moveLeftDistance = 0,
+		this.secretKey = '',
+        // Canvas相关
+        this.curveParams = null,    // 曲线参数JSON
+        this.activeCtrlX = 0,       // 活动曲线控制点x
+        this.bgImage = null,        // 底图Image对象
+        this.canvasWidth = 310,
+        this.canvasHeight = 155,
+        this.defaults = {
+			baseUrl:"https://captcha.anji-plus.com/captcha-api",
+			containerId:'',
+        	captchaType:"curveSlider",
+        	mode : 'fixed',	//弹出式pop，固定fixed
+        	vOffset: 8,
+            vSpace : 5,
+             explain : '向右拖动滑块使曲线重合',
+            imgSize : {
+	        	width: '310px',
+	        	height: '155px',
+			},
+			blockSize : {
+	        	width: '50px',
+	        	height: '50px',
+	        },
+            circleRadius: '10px',
+	        barSize : {
+	        	width : '310px',
+	        	height : '40px',
+			},
+			beforeCheck:function(){ return true},
+            ready : function(){},
+        	success : function(){},
+            error : function(){}
+        },
+        this.options = $.extend({}, this.defaults, opt)
+    };
+
+    //定义CurveSlide的方法
+    CurveSlide.prototype = {
+        init: function() {
+			var _this = this;
+        	this.loadDom();
+			_this.refresh();
+        	this.options.ready();
+
+        	this.$element[0].onselectstart = document.body.ondrag = function(){
+				return false;
+			};
+
+        	if(this.options.mode == 'pop')	{
+				_this.$element.find('.verifybox-close').on('click', function() {
+					_this.$element.find(".mask").css("display","none");
+					_this.refresh();
+				});
+				var clickBtn = document.getElementById(this.options.containerId);
+				clickBtn && (clickBtn.onclick = function(){
+					if (_this.options.beforeCheck()) {
+						_this.$element.find(".mask").css("display","block");
+					}
+				})
+        	}
+
+			//按下
+        	this.htmlDoms.move_block.on('touchstart', function(e) {
+        		_this.start(e);
+        	});
+        	this.htmlDoms.move_block.on('mousedown', function(e) {
+        		_this.start(e);
+        	});
+
+			//拖动
+            window.addEventListener("touchmove", function(e) {
+            	_this.move(e);
+            });
+            window.addEventListener("mousemove", function(e) {
+            	_this.move(e);
+            });
+
+			//鼠标松开
+            window.addEventListener("touchend", function() {
+            	_this.end();
+            });
+            window.addEventListener("mouseup", function() {
+            	_this.end();
+            });
+
+			//刷新
+            _this.$element.find('.verify-refresh').on('click', function() {
+				_this.refresh();
+            });
+        },
+
+		loadDom : function() {
+			this.status = false;
+			this.isEnd = false;
+			this.setSize = Slide.prototype.resetSize(this);
+			this.x = 0;
+			this.y = 0;
+			this.startLeft = 0;
+			var panelHtml = '';
+			var wrapHtml = '';
+
+			wrapStartHtml = '<div class="mask">'+
+								'<div class="verifybox" style="width:'+(parseInt(this.setSize.img_width)+30)+'px">'+
+									'<div class="verifybox-top">'+
+										'请完成安全验证'+
+										'<span class="verifybox-close">'+
+											'<i class="iconfont icon-close"></i>'+
+										'</span>'+
+									'</div>'+
+									'<div class="verifybox-bottom" style="padding:15px">'+
+										'<div style="position: relative;">';
+
+			if (this.options.mode == 'pop') {
+				panelHtml = wrapStartHtml
+			}
+			// V3: 使用canvas替代img，前端绘制底图+活动曲线
+			panelHtml += '<div class="verify-img-out">'+
+							'<div class="verify-img-panel">'+
+								'<div class="verify-refresh" style="z-index:3">'+
+									'<i class="iconfont icon-refresh"></i>'+
+								'</div>'+
+								'<span class="verify-tips"  class="suc-bg"></span>'+
+								'<canvas class="curve-canvas" style="width:100%;height:100%;display:block;"></canvas>'+
+							'</div>'+
+						'</div>';
+
+			panelHtml +='<div class="verify-bar-area" style="width:'+this.setSize.img_width+',height:'+this.setSize.bar_height+',line-height:'+this.setSize.bar_height+'">'+
+								'<span  class="verify-msg">'+this.options.explain+'</span>'+
+								'<div class="verify-left-bar">'+
+									'<span class="verify-msg"></span>'+
+									'<div  class="verify-move-block curve-slide-block">'+
+										'<i  class="verify-icon iconfont icon-right"></i>'+
+									'</div>'+
+								'</div>'+
+							'</div>';
+			wrapEndHtml = '</div></div></div></div>';
+			if (this.options.mode == 'pop') {
+				panelHtml += wrapEndHtml
+			}
+
+        	this.$element.append(panelHtml);
+        	this.htmlDoms = {
+        		tips: this.$element.find('.verify-tips'),
+        		canvas: this.$element.find('.curve-canvas'),
+        		out_panel : this.$element.find('.verify-img-out'),
+        		img_panel : this.$element.find('.verify-img-panel'),
+        		bar_area : this.$element.find('.verify-bar-area'),
+        		move_block : this.$element.find('.verify-move-block'),
+        		left_bar : this.$element.find('.verify-left-bar'),
+        		msg : this.$element.find('.verify-msg'),
+        		icon : this.$element.find('.verify-icon'),
+        		refresh :this.$element.find('.verify-refresh')
+        	};
+
+        	this.$element.css('position', 'relative');
+
+			this.htmlDoms.out_panel.css('height', parseInt(this.setSize.img_height) + this.options.vSpace + 'px');
+			this.htmlDoms.img_panel.css({'width': this.setSize.img_width, 'height': this.setSize.img_height});
+			this.htmlDoms.bar_area.css({'width': this.setSize.img_width, 'height': this.setSize.bar_height, 'line-height':this.setSize.bar_height});
+        	this.htmlDoms.move_block.css({'width': this.setSize.bar_height, 'height': this.setSize.bar_height});
+        	this.htmlDoms.left_bar.css({'width': this.setSize.bar_height, 'height': this.setSize.bar_height});
+        },
+
+        // === Canvas 绘制 ===
+        loadBgAndDraw: function(base64) {
+            var _this = this;
+            var canvas = _this.htmlDoms.canvas[0];
+            if (!canvas || !base64) return;
+            _this.bgImage = new Image();
+            _this.bgImage.onload = function() {
+                _this.canvasWidth = _this.bgImage.width;
+                _this.canvasHeight = _this.bgImage.height;
+                canvas.width = _this.canvasWidth;
+                canvas.height = _this.canvasHeight;
+                _this.drawCanvas();
+            };
+            _this.bgImage.src = 'data:image/png;base64,' + base64;
+        },
+
+        drawCanvas: function() {
+            var canvas = this.htmlDoms.canvas[0];
+            if (!canvas || !this.bgImage) return;
+            var ctx = canvas.getContext('2d');
+            var w = this.canvasWidth;
+            var h = this.canvasHeight;
+            ctx.clearRect(0, 0, w, h);
+            // 绘制底图
+            ctx.drawImage(this.bgImage, 0, 0, w, h);
+            // 绘制活动曲线（蓝色半透明）
+            if (this.curveParams) {
+                this.drawActiveCurve(ctx, this.activeCtrlX);
+            }
+        },
+
+        drawActiveCurve: function(ctx, ctrlX) {
+            if (!this.curveParams) return;
+            var p = this.curveParams;
+            ctx.beginPath();
+            ctx.moveTo(p.startX, p.topY);
+            ctx.quadraticCurveTo(ctrlX, p.bottomY, p.endX, p.topY);
+            ctx.lineWidth = 3;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            ctx.strokeStyle = 'rgba(51, 122, 183, 0.7)';
+            ctx.stroke();
+            // 蓝色端点圆
+            ctx.fillStyle = 'rgba(51, 122, 183, 0.8)';
+            ctx.beginPath();
+            ctx.arc(p.startX, p.topY, 5, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.arc(p.endX, p.topY, 5, 0, Math.PI * 2);
+            ctx.fill();
+        },
+
+        // 计算活动曲线控制点x（基于滑块拖动距离）
+        calcActiveCtrlX: function(moveLeftDistance) {
+            if (!this.curveParams) return 0;
+            var p = this.curveParams;
+            var maxSlide = p.imgWidth - parseInt(this.setSize.block_width);
+            if (maxSlide <= 0) maxSlide = p.imgWidth;
+            var ratio = moveLeftDistance / maxSlide;
+            if (ratio < 0) ratio = 0;
+            if (ratio > 1) ratio = 1;
+            return Math.round(p.ctrlXMin + ratio * (p.ctrlXMax - p.ctrlXMin));
+        },
+
+			// 鼠标按下
+        start: function(e) {
+			if(!e.originalEvent.targetTouches) {
+				var x = e.clientX;
+			}else {
+				var x = e.originalEvent.targetTouches[0].pageX;
+			}
+			this.startLeft = Math.floor(x - this.htmlDoms.bar_area[0].getBoundingClientRect().left);
+			this.startMoveTime = new Date().getTime();
+        	if(this.isEnd == false) {
+	        	this.htmlDoms.msg.text('');
+	        	this.htmlDoms.move_block.css('background-color', '#337ab7');
+	        	this.htmlDoms.left_bar.css('border-color', '#337AB7');
+	        	this.htmlDoms.icon.css('color', '#fff');
+	        	e.stopPropagation();
+	        	this.status = true;
+        	}
+        },
+
+		//鼠标移动
+        move: function(e) {
+        	if(this.status && this.isEnd == false) {
+	            if(!e.touches) {
+	                var x = e.clientX;
+	            }else {
+	                var x = e.touches[0].pageX;
+	            }
+				var bar_area_left = this.htmlDoms.bar_area[0].getBoundingClientRect().left;
+				var move_block_left = x - bar_area_left;
+				if(move_block_left >= (this.htmlDoms.bar_area[0].offsetWidth - parseInt(this.setSize.bar_height) + parseInt(parseInt(this.setSize.block_width)/2) - 2) ) {
+					move_block_left = (this.htmlDoms.bar_area[0].offsetWidth - parseInt(this.setSize.bar_height) + parseInt(parseInt(this.setSize.block_width)/2)- 2);
+				}
+	            if(move_block_left <= parseInt(parseInt(this.setSize.block_width)/2)) {
+            		move_block_left = parseInt(parseInt(this.setSize.block_width)/2);
+            	}
+				//拖动后小方块的left值
+	            this.htmlDoms.move_block.css('left', move_block_left-this.startLeft + "px");
+	            this.htmlDoms.left_bar.css('width', move_block_left-this.startLeft + "px");
+				this.moveLeftDistance = move_block_left - this.startLeft;
+	            // V3: 实时更新活动曲线
+	            var scaledLeft = this.moveLeftDistance * 310 / parseInt(this.setSize.img_width);
+	            this.activeCtrlX = this.calcActiveCtrlX(scaledLeft);
+	            this.drawCanvas();
+	        }
+        },
+
+		//鼠标松开
+        end: function() {
+			this.endMovetime = new Date().getTime();
+        	var _this = this;
+        	if(this.status  && this.isEnd == false) {
+			this.moveLeftDistance = this.moveLeftDistance * 310 / parseInt(this.setSize.img_width);
+			// V3: 传活动曲线控制点x坐标, y固定传0
+
+			var data = {
+				captchaType:this.options.captchaType,
+				"pointJson": this.secretKey ? aesEncrypt(JSON.stringify({x:this.activeCtrlX,y:0}),this.secretKey):JSON.stringify({x:this.activeCtrlX,y:0}),
+				"token":this.backToken,
+				clientUid: localStorage.getItem('slider'),
+				ts: Date.now()
+			}
+			var captchaVerification = this.secretKey ? aesEncrypt(this.backToken+'---'+JSON.stringify({x:this.activeCtrlX,y:0}),this.secretKey):this.backToken+'---'+JSON.stringify({x:this.activeCtrlX,y:0})
+				checkPictrue(data,this.options.baseUrl,function(res){
+					if (res.repCode=="0000") {
+						_this.htmlDoms.move_block.css('background-color', '#5cb85c');
+						_this.htmlDoms.left_bar.css({'border-color': '#5cb85c', 'background-color': '#fff'});
+						_this.htmlDoms.icon.css('color', '#fff');
+						_this.htmlDoms.icon.removeClass('icon-right');
+						_this.htmlDoms.icon.addClass('icon-check');
+						_this.htmlDoms.tips.addClass('suc-bg').removeClass('err-bg')
+						_this.htmlDoms.tips.animate({"bottom":"0px"});
+						_this.htmlDoms.tips.text(((_this.endMovetime-_this.startMoveTime)/1000).toFixed(2) + 's验证成功');
+						_this.isEnd = true;
+						setTimeout(function(){
+							_this.$element.find(".mask").css("display","none");
+							_this.htmlDoms.tips.animate({"bottom":"-35px"});
+							_this.refresh();
+						},1000)
+						_this.options.success({'captchaVerification':captchaVerification});
+					}else{
+						_this.htmlDoms.move_block.css('background-color', '#d9534f');
+						_this.htmlDoms.left_bar.css('border-color', '#d9534f');
+						_this.htmlDoms.icon.css('color', '#fff');
+						_this.htmlDoms.icon.removeClass('icon-right');
+						_this.htmlDoms.icon.addClass('icon-close');
+						_this.htmlDoms.tips.addClass('err-bg').removeClass('suc-bg')
+						_this.htmlDoms.tips.animate({"bottom":"0px"});
+						_this.htmlDoms.tips.text(res.repMsg)
+						setTimeout(function () {
+							_this.refresh();
+							_this.htmlDoms.tips.animate({"bottom":"-35px"});
+						}, 1000);
+						_this.options.error(this);
+					}
+				})
+	            this.status = false;
+        	}
+		},
+
+		//刷新
+        refresh: function() {
+			var _this = this;
+        	this.htmlDoms.refresh.show();
+        	this.$element.find('.verify-msg:eq(1)').text('');
+        	this.$element.find('.verify-msg:eq(1)').css('color', '#000');
+        	this.htmlDoms.move_block.animate({'left':'0px'}, 'fast');
+			this.htmlDoms.left_bar.animate({'width': parseInt(this.setSize.bar_height)}, 'fast');
+			this.htmlDoms.left_bar.css({'border-color': '#ddd'});
+			this.htmlDoms.move_block.css('background-color', '#fff');
+			this.htmlDoms.icon.css('color', '#000');
+			this.htmlDoms.icon.removeClass('icon-close');
+			this.htmlDoms.icon.addClass('icon-right');
+			this.$element.find('.verify-msg:eq(0)').text(this.options.explain);
+			this.isEnd = false;
+			getPictrue({captchaType:"curveSlider", clientUid: localStorage.getItem('slider'), ts: Date.now()},this.options.baseUrl,function (res) {
+				if (res.repCode=="0000") {
+					_this.secretKey = res.repData.secretKey
+					_this.backToken = res.repData.token
+					// V3: 解析曲线参数JSON
+					try {
+						_this.curveParams = JSON.parse(res.repData.jigsawImageBase64);
+					} catch(e) {
+						console.error('曲线参数解析失败', e);
+						_this.curveParams = null;
+					}
+					_this.activeCtrlX = _this.curveParams ? _this.curveParams.ctrlXMin : 0;
+					// V3: 加载底图并绘制Canvas
+					_this.loadBgAndDraw(res.repData.originalImageBase64);
+				} else {
+					_this.htmlDoms.tips.addClass('err-bg').removeClass('suc-bg')
+					_this.htmlDoms.tips.animate({"bottom":"0px"});
+					_this.htmlDoms.tips.text(res.repMsg)
+					setTimeout(function () {
+							_this.htmlDoms.tips.animate({"bottom":"-35px"});
+						}, 1000);
+					}
+			});
+        },
+    };
+
+    //在插件中使用curveSlideVerify对象
+    $.fn.curveSlideVerify = function(options, callbacks) {
+		var curveSlide = new CurveSlide(this, options);
+		if (curveSlide.options.mode=="pop") {
+			curveSlide.init();
+		}else if (curveSlide.options.mode=="fixed") {
+			curveSlide.init();
+		}
+    };
    
 })(jQuery, window, document);

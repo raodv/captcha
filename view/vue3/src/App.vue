@@ -1,6 +1,7 @@
 <template>
   <button @click="onShow('blockPuzzle')">滑块</button>
   <button @click="onShow('clickWord')">点击文字</button>
+  <button @click="onShow('curveSlider')">滑块曲线</button>
   <Verify
       mode="pop"
       :captchaType="captchaType"

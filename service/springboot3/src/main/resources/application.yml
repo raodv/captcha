@@ -1,0 +1,75 @@
+server:
+  port: 8081
+  servlet:
+    context-path: /
+
+spring:
+  application:
+    name: captcha-service
+  data:
+    redis:
+      host: redis-host
+      port: 6379
+      password: Allways123
+      database: 22
+      timeout: 6000
+  messages:
+    basename: messages/messages,captcha/messages
+    encoding: utf-8
+
+
+aj:
+  captcha:
+    # 滑动拼图底图路径
+    jigsaw: classpath:images/jigsaw
+    # 点选文字底图路径
+    pic-click: classpath:images/pic-click
+    # 滑块曲线底图路径
+    curve-slider: classpath:images/curveSlider
+
+    # 缓存local/redis...
+    cache-type: local
+    # local缓存的阈值
+    # cache-number: 1000
+    # local定时清除过期缓存(单位秒)
+    # timing-clear: 180
+
+    # 验证码类型default两种都实例化
+    type: default
+    # 右下角水印文字
+    water-mark: 我的水印
+    # 右下角水印字体(不配置时默认使用文泉驿正黑)
+    # water-font: WenQuanZhengHei.ttf
+    # 点选文字验证码的文字字体
+    # font-type: WenQuanZhengHei.ttf
+    # 校验滑动拼图允许误差偏移量(默认5像素)
+    slip-offset: 5
+    # 校验滑块曲线允许误差偏移量(默认8像素)
+    curve-offset: 8
+    # aes加密坐标开启或禁用
+    aes-status: true
+    # 滑动干扰项(0/1/2)
+    interference-options: 2
+
+    # 点选字体样式 默认Font.BOLD
+    font-style: 1
+    # 点选字体字号
+    font-size: 25
+    # 点选文字个数,存在扩展问题,暂不支持修改
+    # click-word-count: 4
+
+    history-data-clear-enable: false
+
+    # 接口请求次数一分钟限制
+    req-frequency-limit-enable: false
+    req-get-lock-limit: 5
+    req-get-lock-seconds: 360
+    req-get-minute-limit: 30
+    req-check-minute-limit: 30
+    # req-verify-minute-limit: 30
+
+    # 验证码国际化
+    i18n:
+      enabled: true
+      prefx: aj.captcha.
+

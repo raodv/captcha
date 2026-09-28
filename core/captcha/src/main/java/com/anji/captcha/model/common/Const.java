@@ -11,9 +11,14 @@ public interface Const {
     String ORIGINAL_PATH_JIGSAW = "captcha.captchaOriginalPath.jigsaw";
 
     /***
-     *点选底图路径
-     */
-    String ORIGINAL_PATH_PIC_CLICK = "captcha.captchaOriginalPath.pic-click";
+	 * 点选底图路径
+	 */
+	String ORIGINAL_PATH_PIC_CLICK = "captcha.captchaOriginalPath.pic-click";
+
+	/**
+	 * 滑块曲线底图路径
+	 */
+	String ORIGINAL_PATH_CURVE_SLIDER = "captcha.captchaOriginalPath.curveSlider";
 
 	/***
 	 *旋转底图路径
@@ -56,6 +61,11 @@ public interface Const {
      * 滑动误差偏移量
      */
     String CAPTCHA_SLIP_OFFSET = "captcha.slip.offset";
+
+    /**
+     * 滑块曲线允许误差偏移量(默认8像素)
+     */
+    String CAPTCHA_CURVE_OFFSET = "captcha.curve.offset";
 
     /**
      * aes加密开关

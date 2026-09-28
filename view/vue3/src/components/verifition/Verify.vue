@@ -33,13 +33,15 @@
      * */
     import VerifySlide from './Verify/VerifySlide'
     import VerifyPoints from './Verify/VerifyPoints'
+    import VerifyCurve from './Verify/VerifyCurve'
 import { computed, ref,watch,toRefs,watchEffect } from 'vue';
 
     export default {
         name: 'Vue2Verify',
         components: {
             VerifySlide,
-            VerifyPoints
+            VerifyPoints,
+            VerifyCurve
         },
         props: {
             captchaType:{
@@ -121,6 +123,10 @@ import { computed, ref,watch,toRefs,watchEffect } from 'vue';
                     case 'clickWord':
                         verifyType.value = ''
                         componentType.value = 'VerifyPoints'
+                        break
+                    case 'curveSlider':
+                        verifyType.value = '2'
+                        componentType.value = 'VerifyCurve'
                         break
                 }
             })

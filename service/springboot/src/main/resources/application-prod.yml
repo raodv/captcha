@@ -1,0 +1,38 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /
+spring:
+  application:
+    name: captcha-service
+  redis:
+    host: redis-host
+    port: 6379
+    password: Allways123
+    database: 22
+    timeout: 6000
+  messages:
+    basename: messages/messages,captcha/messages
+
+
+aj:
+  captcha:
+    cache-type: redis
+    cache-number: 1000
+    timing-clear: 3600
+    jigsaw: classpath:images/jigsaw
+    pic-click: classpath:images/pic-click
+    # curve-slider: classpath:images/curveSlider
+    type: default
+    water-mark: 我的水印
+    water-font: 宋体
+    font-type: 宋体
+    slip-offset: 5
+    curve-offset: 8
+    aes-status: true
+    interference-options: 1
+    i18n:
+      enabled: true
+      prefx: aj.captcha.
+
+

@@ -27,9 +27,14 @@ public class ImageUtils {
     private static Map<String, String> originalCacheMap = new ConcurrentHashMap();  //滑块底图
     private static Map<String, String> slidingBlockCacheMap = new ConcurrentHashMap(); //滑块
     private static Map<String, String> picClickCacheMap = new ConcurrentHashMap(); //点选文字
+    private static Map<String, String> curveSliderCacheMap = new ConcurrentHashMap(); //滑块曲线底图
     private static Map<String, String[]> fileNameMap = new ConcurrentHashMap<>();
 
     public static void cacheImage(String captchaOriginalPathJigsaw, String captchaOriginalPathClick, String captchaOriginalPathRotate) {
+        cacheImage(captchaOriginalPathJigsaw, captchaOriginalPathClick, captchaOriginalPathRotate, null);
+    }
+
+    public static void cacheImage(String captchaOriginalPathJigsaw, String captchaOriginalPathClick, String captchaOriginalPathRotate, String captchaOriginalPathCurve) {
         // 旋转拼图
         if (StringUtils.isBlank(captchaOriginalPathRotate)) {
             originalRotateCacheMap.putAll(getResourcesImagesFile("defaultImages/rotate/original"));
@@ -52,22 +57,37 @@ public class ImageUtils {
         } else {
             picClickCacheMap.putAll(getImagesFile(captchaOriginalPathClick));
         }
+        //滑块曲线
+        if (StringUtils.isBlank(captchaOriginalPathCurve)) {
+            curveSliderCacheMap.putAll(getResourcesImagesFile("defaultImages/curveSlider/original"));
+        } else {
+            curveSliderCacheMap.putAll(getImagesFile(captchaOriginalPathCurve + File.separator + "original"));
+        }
 
         fileNameMap.put(CaptchaBaseMapEnum.ORIGINAL.getCodeValue(), originalCacheMap.keySet().toArray(new String[0]));
         fileNameMap.put(CaptchaBaseMapEnum.SLIDING_BLOCK.getCodeValue(), slidingBlockCacheMap.keySet().toArray(new String[0]));
         fileNameMap.put(CaptchaBaseMapEnum.PIC_CLICK.getCodeValue(), picClickCacheMap.keySet().toArray(new String[0]));
         fileNameMap.put(CaptchaBaseMapEnum.ROTATE.getCodeValue(), originalRotateCacheMap.keySet().toArray(new String[0]));
         fileNameMap.put(CaptchaBaseMapEnum.ROTATE_BLOCK.getCodeValue(), rotateBlockCacheMap.keySet().toArray(new String[0]));
+        fileNameMap.put(CaptchaBaseMapEnum.CURVE_SLIDER.getCodeValue(), curveSliderCacheMap.keySet().toArray(new String[0]));
         logger.info("初始化底图:{}", JsonUtil.toJSONString(fileNameMap));
     }
 
     public static void cacheBootImage(Map<String, String> originalMap, Map<String, String> slidingBlockMap, Map<String, String> picClickMap) {
+        cacheBootImage(originalMap, slidingBlockMap, picClickMap, null);
+    }
+
+    public static void cacheBootImage(Map<String, String> originalMap, Map<String, String> slidingBlockMap, Map<String, String> picClickMap, Map<String, String> curveSliderMap) {
         originalCacheMap.putAll(originalMap);
         slidingBlockCacheMap.putAll(slidingBlockMap);
         picClickCacheMap.putAll(picClickMap);
+        if (curveSliderMap != null) {
+            curveSliderCacheMap.putAll(curveSliderMap);
+        }
         fileNameMap.put(CaptchaBaseMapEnum.ORIGINAL.getCodeValue(), originalCacheMap.keySet().toArray(new String[0]));
         fileNameMap.put(CaptchaBaseMapEnum.SLIDING_BLOCK.getCodeValue(), slidingBlockCacheMap.keySet().toArray(new String[0]));
         fileNameMap.put(CaptchaBaseMapEnum.PIC_CLICK.getCodeValue(), picClickCacheMap.keySet().toArray(new String[0]));
+        fileNameMap.put(CaptchaBaseMapEnum.CURVE_SLIDER.getCodeValue(), curveSliderCacheMap.keySet().toArray(new String[0]));
         logger.info("自定义resource底图:{}", JsonUtil.toJSONString(fileNameMap));
     }
 
@@ -118,6 +138,16 @@ public class ImageUtils {
         }
         Integer randomInt = RandomUtils.getRandomInt(0, strings.length);
         String s = picClickCacheMap.get(strings[randomInt]);
+        return getBase64StrToImage(s);
+    }
+
+    public static BufferedImage getCurveOriginal() {
+        String[] strings = fileNameMap.get(CaptchaBaseMapEnum.CURVE_SLIDER.getCodeValue());
+        if (null == strings || strings.length == 0) {
+            return null;
+        }
+        Integer randomInt = RandomUtils.getRandomInt(0, strings.length);
+        String s = curveSliderCacheMap.get(strings[randomInt]);
         return getBase64StrToImage(s);
     }
 

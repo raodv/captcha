@@ -46,6 +46,13 @@
 			<div id="mpanel2" style="margin-top:50px;">
 			</div>
 			
+			<h3>滑块曲线嵌入式（curve-embed）</h3>
+			<div id="mpanel5" style="margin-top:50px;">
+			</div>
+			<h3>滑块曲线弹出式（curve-popup）</h3>
+			<button class="btn" id='btn3'>点击我</button>
+			<div id="mpanel6" style="margin-top:50px;">
+			</div>
 			<h3>点选嵌入式（point-embed）</h3>
 			<div id="mpanel3" style="margin-top:50px;">
 			</div>
@@ -63,8 +70,8 @@
 			// 初始化验证码  嵌入式
         	$('#mpanel1').slideVerify({
 				// baseUrl:'https://captcha.anji-plus.com/captcha-api',  //服务器请求地址, 默认地址为安吉服务器;
-				// baseUrl:'http://localhost:8080/captcha_springmvc_war_exploded',  //local-spring-mvc;
-				baseUrl:'http://localhost:8080',  //local-spring-boot;
+				// baseUrl:'http://localhost:8081/captcha_springmvc_war_exploded',  //local-spring-mvc;
+				baseUrl:'http://localhost:8081',  //local-spring-boot;
 				mode:'fixed',
 				imgSize : {       //图片的大小对象
 		        	width: '400px',
@@ -87,7 +94,7 @@
 			// // 初始化验证码  弹出式
 			$('#mpanel2').slideVerify({
 				// baseUrl:'https://captcha.anji-plus.com/captcha-api',  //服务器请求地址, 默认地址为安吉服务器;
-				baseUrl:'http://localhost:8080',  //local-spring-boot;
+				baseUrl:'http://localhost:8081',  //local-spring-boot;
 				mode:'pop',     //展示模式
 				containerId:'btn',//pop模式 必填 被点击之后出现行为验证码的元素id
 				imgSize : {       //图片的大小对象,有默认值{ width: '310px',height: '155px'},可省略
@@ -124,7 +131,7 @@
 			// 初始化验证码  嵌入式
 			$('#mpanel3').pointsVerify({
 				// baseUrl:'https://captcha.anji-plus.com/captcha-api',  //服务器请求地址, 默认地址为安吉服务器;
-				baseUrl:'http://localhost:8080',  //local-spring-boot;
+				baseUrl:'http://localhost:8081',  //local-spring-boot;
 				// baseUrl:'http://10.108.12.12:8080',  //服务器请求地址, 默认地址为安吉服务器;
 				mode:'fixed',
 		    	imgSize : {
@@ -142,7 +149,7 @@
 		    });
 			// // 初始化验证码  弹出式
 		    $('#mpanel4').pointsVerify({
-				baseUrl:'http://localhost:8080',  //local-spring-boot;
+				baseUrl:'http://localhost:8081',  //local-spring-boot;
 				// baseUrl:'https://captcha.anji-plus.com/captcha-api',  //服务器请求地址, 默认地址为安吉服务器;
 				containerId:'btn2', // pop模式 必填 被点击之后出现行为验证码的元素id
 				mode:'pop',
@@ -157,8 +164,51 @@
 		        },
 		        error : function() {
 		        }
-		    });
-        </script>
+				    });
+
+			// ==================== 滑块曲线 嵌入式 ====================
+			$('#mpanel5').curveSlideVerify({
+				baseUrl:'http://localhost:8081',  //local-spring-boot;
+				mode:'fixed',
+				imgSize : {
+					width: '400px',
+					height: '200px',
+				},
+				barSize:{
+					width: '400px',
+					height: '40px',
+				},
+				ready : function() {
+				},
+				success : function(params) {
+					console.log(params,"curve params");
+				},
+				error : function() {
+				}
+			});
+
+			// ==================== 滑块曲线 弹出式 ====================
+			$('#mpanel6').curveSlideVerify({
+				baseUrl:'http://localhost:8081',  //local-spring-boot;
+				mode:'pop',
+				containerId:'btn3',
+				imgSize : {
+					width: '400px',
+					height: '200px',
+				},
+				barSize:{
+					width: '400px',
+					height: '40px',
+				},
+				beforeCheck:function(){
+					return true;
+				},
+				ready : function() {},
+				success : function(params) {
+				},
+				error : function() {}
+			});
+	        </script>
     </body>
  
 </html>

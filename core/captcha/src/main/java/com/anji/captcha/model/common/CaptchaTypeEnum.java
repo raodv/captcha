@@ -10,6 +10,10 @@ public enum CaptchaTypeEnum {
      */
     BLOCKPUZZLE("blockPuzzle","滑块拼图"),
     /**
+     * 滑块曲线
+     */
+    CURVESLIDER("curveSlider","滑块曲线"),
+    /**
      * 文字点选.
      */
     CLICKWORD("clickWord","文字点选"),

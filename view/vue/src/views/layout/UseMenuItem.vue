@@ -26,6 +26,15 @@
               <el-menu-item index="/useOnline/pointPop">弹出式</el-menu-item>
             </el-menu-item-group>
           </el-submenu>
+          <el-submenu index="/useOnline">
+            <template slot="title">
+              <span>滑块曲线验证</span>
+            </template>
+            <el-menu-item-group>
+              <el-menu-item index="/useOnline/curveFixed">嵌入式</el-menu-item>
+              <el-menu-item index="/useOnline/curvePop">弹出式</el-menu-item>
+            </el-menu-item-group>
+          </el-submenu>
         </el-menu>
       </el-col>
     </el-row>

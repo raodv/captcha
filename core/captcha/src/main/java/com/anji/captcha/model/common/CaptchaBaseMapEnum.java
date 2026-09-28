@@ -8,7 +8,8 @@ public enum CaptchaBaseMapEnum {
     ROTATE_BLOCK("ROTATE_BLOCK", "旋转拼图旋转块底图"),
     ORIGINAL("ORIGINAL", "滑动拼图底图"),
     SLIDING_BLOCK("SLIDING_BLOCK", "滑动拼图滑块底图"),
-    PIC_CLICK("PIC_CLICK", "文字点选底图");
+    PIC_CLICK("PIC_CLICK", "文字点选底图"),
+    CURVE_SLIDER("CURVE_SLIDER", "滑块曲线底图");
 
     private String codeValue;
     private String codeDesc;

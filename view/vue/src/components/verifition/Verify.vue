@@ -36,12 +36,14 @@
      * */
 import VerifySlide from './Verify/VerifySlide'
 import VerifyPoints from './Verify/VerifyPoints'
+import VerifyCurve from './Verify/VerifyCurve'
 
 export default {
   name: 'Vue2Verify',
   components: {
     VerifySlide,
-    VerifyPoints
+    VerifyPoints,
+    VerifyCurve
   },
   props: {
     // 双语化
@@ -130,6 +132,10 @@ export default {
           case 'clickWord':
             this.verifyType = ''
             this.componentType = 'VerifyPoints'
+            break
+          case 'curveSlider':
+            this.verifyType = '2'
+            this.componentType = 'VerifyCurve'
             break
         }
       }

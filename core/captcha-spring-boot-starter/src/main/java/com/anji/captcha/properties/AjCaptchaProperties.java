@@ -27,6 +27,11 @@ public class AjCaptchaProperties {
      */
     private String picClick = "";
 
+    /**
+     * 滑块曲线底图路径.
+     */
+    private String curveSlider = "";
+
 
     /**
      * 右下角水印文字(我的水印).
@@ -47,6 +52,11 @@ public class AjCaptchaProperties {
      * 校验滑动拼图允许误差偏移量(默认5像素).
      */
     private String slipOffset = "5";
+
+    /**
+     * 校验滑块曲线允许误差偏移量(默认8像素).
+     */
+    private String curveOffset = "8";
 
     /**
      * aes加密坐标开启或者禁用(true|false).
@@ -240,6 +250,14 @@ public class AjCaptchaProperties {
         this.picClick = picClick;
     }
 
+    public String getCurveSlider() {
+        return curveSlider;
+    }
+
+    public void setCurveSlider(String curveSlider) {
+        this.curveSlider = curveSlider;
+    }
+
     public String getWaterMark() {
         return waterMark;
     }
@@ -270,6 +288,14 @@ public class AjCaptchaProperties {
 
     public void setSlipOffset(String slipOffset) {
         this.slipOffset = slipOffset;
+    }
+
+    public String getCurveOffset() {
+        return curveOffset;
+    }
+
+    public void setCurveOffset(String curveOffset) {
+        this.curveOffset = curveOffset;
     }
 
     public Boolean getAesStatus() {
@@ -318,10 +344,12 @@ public class AjCaptchaProperties {
                 "type=" + type +
                 ", jigsaw='" + jigsaw + '\'' +
                 ", picClick='" + picClick + '\'' +
+                ", curveSlider='" + curveSlider + '\'' +
                 ", waterMark='" + waterMark + '\'' +
                 ", waterFont='" + waterFont + '\'' +
                 ", fontType='" + fontType + '\'' +
                 ", slipOffset='" + slipOffset + '\'' +
+                ", curveOffset='" + curveOffset + '\'' +
                 ", aesStatus=" + aesStatus +
                 ", interferenceOptions='" + interferenceOptions + '\'' +
                 ", cacheNumber='" + cacheNumber + '\'' +
