@@ -74,8 +74,8 @@
 
     <profiles>
         <profile>
-            <!-- 发布 profile：日常构建不激活，发布时用 mvn clean deploy -P release -->
-            <id>release</id>
+            <!-- 发布 profile：sonatype-oss-release 不默认激活，发布时用 mvn clean deploy -P sonatype-oss-release -->
+            <id>sonatype-oss-release</id>
             <build>
                 <plugins>
                     <plugin>
