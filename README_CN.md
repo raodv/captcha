@@ -1,20 +1,12 @@
----
-AIGC:
-  ContentProducer: '001191110102MAD55U9H0F10002'
-  ContentPropagator: '001191110102MAD55U9H0F10002'
-  Label: '1'
-  ProduceID: '4a7b65de-912b-4e5a-8920-29ab51ac0ac0'
-  PropagateID: '4a7b65de-912b-4e5a-8920-29ab51ac0ac0'
-  ReservedCode1: '2603406b-4093-46e9-adfa-47d0bae7a153'
-  ReservedCode2: '2603406b-4093-46e9-adfa-47d0bae7a153'
----
 
 # **在线体验暂时下线 ！！！**
-#### &emsp; 在线文档:[https://ajcaptcha.beliefteam.cn/captcha-doc/](https://ajcaptcha.beliefteam.cn/captcha-doc/ "doc")<br>
 
-[![License](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg)](https://www.apache.org/licenses/LICENSE-2.0.html)[![Total Lines](https://tokei.rs/b1/github/anji-plus/captcha?category=lines)](https://github.com/anji-plus/captcha)
+[//]: # (#### &emsp; 在线文档:[https://ajcaptcha.beliefteam.cn/captcha-doc/]&#40;https://ajcaptcha.beliefteam.cn/captcha-doc/ "doc"&#41;<br>)
 
-[![EN doc](https://img.shields.io/badge/document-English-blue.svg)](README.md)[![CN doc](https://img.shields.io/badge/文档-中文版-blue.svg)](README_CN.md)
+[//]: # ([![License]&#40;https://img.shields.io/badge/license-Apache%202-4EB1BA.svg&#41;]&#40;https://www.apache.org/licenses/LICENSE-2.0.html&#41;[![Total Lines]&#40;https://tokei.rs/b1/github/anji-plus/captcha?category=lines&#41;]&#40;https://github.com/anji-plus/captcha&#41;)
+
+[//]: # ()
+[//]: # ([![EN doc]&#40;https://img.shields.io/badge/document-English-blue.svg&#41;]&#40;README.md&#41;[![CN doc]&#40;https://img.shields.io/badge/文档-中文版-blue.svg&#41;]&#40;README_CN.md&#41;)
 
 ## 简介
 &emsp; &emsp; AJ-Captcha行为验证码，包含滑动拼图、滑块曲线、文字点选三种方式，UI支持弹出和嵌入两种方式。后端提供Java、Golang实现，前端提供了php、angular、html、vue、uni-app、flutter、android、ios等代码示例。
@@ -92,8 +84,9 @@ I  Your application is running here: http://localhost:8081
 提交Issue前请查阅已有Issue.
 如有兴趣提交PR,请参考[提交PR规范](./CONTRIBUTING.md),切忌不要直接提交大PR，否则会影响合并流程和审核时效，也不要提交到master分支。
 
-技术交流群：新群可直接进<br>
-<img src="https://ajreport.beliefteam.cn/file/download/495faaaa-4277-45e8-979a-ffccb6b1e86f" width = "200" height = auto />
+[//]: # (技术交流群：新群可直接进<br>)
+
+[//]: # (<img src="https://ajreport.beliefteam.cn/file/download/495faaaa-4277-45e8-979a-ffccb6b1e86f" width = "200" height = auto />)
 
 加微信前请备注AJ-Captcha。
 <br>微信群地址
@@ -106,5 +99,3 @@ I  Your application is running here: http://localhost:8081
 
 # Stargazers over time
 [![Stargazers over time](https://starchart.cc/anji-plus/captcha.svg)](https://starchart.cc/anji-plus/captcha)
-
-> AI生成
